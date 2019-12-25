@@ -15,12 +15,13 @@ metadata:
   name: kaniko-warm
 spec:
   containers:
-  - name: kaniko-warm
+  - name: kaniko-warmer
     image: 172.16.1.99/gold/kaniko/warmer:latest
     args: ["--cache-dir=/cache",
-           "--insecure",
-           "--skip-tls-verify",
-           "--image=10.10.32.171:443/stage/ockle:tdc-2.1"]
+           "--insecure-pull=true",
+           "--skip-tls-verify-pull=true",
+           "--image=10.10.32.171:443/stage/tos-app-market:tdc-2.2",
+           "--verbosity=debug"]
     volumeMounts:
       - name: kaniko-secret
         mountPath: /secret
@@ -40,4 +41,5 @@ spec:
     - name: kaniko-cache
       persistentVolumeClaim:
         claimName: kaniko-cache-claim   
+
 

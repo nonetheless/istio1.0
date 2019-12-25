@@ -19,18 +19,21 @@ spec:
   containers:
   - name: kaniko-git
     image: 172.16.1.99/gold/kaniko/excutor:latest
-    args: [ "--dockerfile=docker-build/Dockerfile",
-            "--context=git://VQLHsH4yZHXW_sqg4KSf@172.16.1.41:10022/TDC/ockle.git#refs/heads/master",
-            "--destination=10.10.32.171:443/stage/ockle:tdc-2.2",
-            "--insecure",
-            "--skip-tls-verify",
-            "--cache",
-            "--cache-dir=/cache"]
+    args: [ "--dockerfile=Dockerfile",
+            "--context=git://nonetheless:VQLHsH4yZHXW_sqg4KSf@172.16.1.41:10080/app/tos-app-market.git#refs/heads/master",
+            "--insecure-git=true",
+            "--destination=10.10.32.171:443/stage/tos-app-market:tdc-2.2",
+            "--insecure=true",
+            "--skip-tls-verify=true",
+            "--cache=true",
+            "--cache-dir=/cache",
+            "--cache-repo=10.10.32.171:443/stage/cache"
+          ]
     volumeMounts:
       - name: kaniko-secret
-        mountPath: /root
+        mountPath: /root/.docker
       - name: dockerfile-storage
-        mountPath: /workspace
+        mountPath: /root
       - name: kaniko-cache
         mountPath: /cache        
   restartPolicy: Never
@@ -40,11 +43,12 @@ spec:
         secretName: regcred
         items:
           - key: .dockerconfigjson
-            path: .docker/config.json
+            path: config.json
     - name: dockerfile-storage
       persistentVolumeClaim:
         claimName: dockerfile-claim
     - name: kaniko-cache
       persistentVolumeClaim:
         claimName: kaniko-cache-claim    
+
 

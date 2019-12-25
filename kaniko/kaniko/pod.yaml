@@ -23,10 +23,10 @@ spec:
             "--insecure",
             "--skip-tls-verify",
             "--cache",
-            "--cache-dir=/cache"]
+            "--cache-dir=/cache"] # replace with your dockerhub account
     volumeMounts:
       - name: kaniko-secret
-        mountPath: /root
+        mountPath: /root/.docker
       - name: dockerfile-storage
         mountPath: /workspace
       - name: kaniko-cache
@@ -38,7 +38,7 @@ spec:
         secretName: regcred
         items:
           - key: .dockerconfigjson
-            path: .docker/config.json
+            path: config.json
     - name: dockerfile-storage
       persistentVolumeClaim:
         claimName: dockerfile-claim

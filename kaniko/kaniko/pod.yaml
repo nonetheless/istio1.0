@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.networks: overlay
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "",
+          "ips": [
+              "10.16.11.114"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+  name: kaniko
+spec:
+  containers:
+  - name: kaniko
+    image: 172.16.1.99/gold/kaniko/excutor:latest
+    args: [ "--dockerfile=/workspace/ockle1/dockerfile",
+            "--context=dir://workspace",
+            "--destination=10.10.32.171:443/stage/ockle:tdc-2.1",
+            "--insecure",
+            "--skip-tls-verify",
+            "--cache",
+            "--cache-dir=/cache"]
+    volumeMounts:
+      - name: kaniko-secret
+        mountPath: /root
+      - name: dockerfile-storage
+        mountPath: /workspace
+      - name: kaniko-cache
+        mountPath: /cache        
+  restartPolicy: Never
+  volumes:
+    - name: kaniko-secret
+      secret:
+        secretName: regcred
+        items:
+          - key: .dockerconfigjson
+            path: .docker/config.json
+    - name: dockerfile-storage
+      persistentVolumeClaim:
+        claimName: dockerfile-claim
+    - name: kaniko-cache
+      persistentVolumeClaim:
+        claimName: kaniko-cache-claim    
+

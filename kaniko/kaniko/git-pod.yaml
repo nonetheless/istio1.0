@@ -1,0 +1,50 @@
+# VQLHsH4yZHXW_sqg4KSf
+# git://github.com/acme/myproject.git#refs/heads/mybranch
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.networks: overlay
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "",
+          "ips": [
+              "10.16.11.114"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+  name: kaniko-git
+spec:
+  containers:
+  - name: kaniko-git
+    image: 172.16.1.99/gold/kaniko/excutor:latest
+    args: [ "--dockerfile=docker-build/Dockerfile",
+            "--context=git://VQLHsH4yZHXW_sqg4KSf@172.16.1.41:10022/TDC/ockle.git#refs/heads/master",
+            "--destination=10.10.32.171:443/stage/ockle:tdc-2.2",
+            "--insecure",
+            "--skip-tls-verify",
+            "--cache",
+            "--cache-dir=/cache"]
+    volumeMounts:
+      - name: kaniko-secret
+        mountPath: /root
+      - name: dockerfile-storage
+        mountPath: /workspace
+      - name: kaniko-cache
+        mountPath: /cache        
+  restartPolicy: Never
+  volumes:
+    - name: kaniko-secret
+      secret:
+        secretName: regcred
+        items:
+          - key: .dockerconfigjson
+            path: .docker/config.json
+    - name: dockerfile-storage
+      persistentVolumeClaim:
+        claimName: dockerfile-claim
+    - name: kaniko-cache
+      persistentVolumeClaim:
+        claimName: kaniko-cache-claim    
+

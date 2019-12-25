@@ -1,0 +1,2 @@
+From gcr.io/cloud-builders/bazel:latest
+MAINTAINER xinlin <ggg66166161@163.com>
